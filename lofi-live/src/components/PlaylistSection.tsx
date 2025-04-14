@@ -14,6 +14,11 @@ export default function PlaylistSection({ artists }: Props) {
   const isLoggedIn = true; // change later with real auth
 
   const [songs, setSongs] = useState<{ artist: string; title: string }[]>([]);
+  const [formData, setFormData] = useState({
+    title:"",
+    artist:'',
+    thumbnail:''
+  })
   const [artistTracks, setArtistTracks] = useState<Record<string, string[]>>({});
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [justAdded, setJustAdded] = useState<string | null>(null);
@@ -65,6 +70,18 @@ export default function PlaylistSection({ artists }: Props) {
     setSongs((prev) => [...prev, { artist, title: next }]);
     setJustAdded(artist);
     setTimeout(() => setJustAdded(null), 2000);
+  };
+
+  const handleAddSong2 = (e: React.FormEvent) => {
+    e.preventDefault;
+    console.log("Song added:", formData)
+    setIsModalOpen(false);
+  }
+
+  const handleFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault;
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleDelete = (songToDelete: { artist: string; title: string }) => {
@@ -135,6 +152,42 @@ export default function PlaylistSection({ artists }: Props) {
             <Dialog.Title className="text-lg font-bold text-black mb-4">
               Add Songs by Artist
             </Dialog.Title>
+            <form onSubmit={handleAddSong2}>
+              <input
+                type="text"
+                name="title"
+                placeholder="Song title"
+                value={formData.title}
+                onChange={handleFormChange}
+                className="w-full p-3 rounded border border-gray-300 shadow-sm"
+                required
+              />
+              <input
+                type="text"
+                name="artist"
+                placeholder="Artist"
+                value={formData.artist}
+                onChange={handleFormChange}
+                className="w-full p-3 rounded border border-gray-300 shadow-sm"
+                required
+              />
+              <input
+                type="text"
+                name="thumbnail"
+                placeholder="Thumbnail"
+                value={formData.thumbnail}
+                onChange={handleFormChange}
+                className="w-full p-3 rounded border border-gray-300 shadow-sm"
+                required
+              />
+              <button
+                type="submit"
+                className="w-full bg-black text-white py-2 px-4 rounded hover:bg-gray-800 transition"
+              >
+                Add song
+              </button>
+            </form>
+            {/*
             <div className="space-y-2">
               {artists.map((artist) => (
                 <button
@@ -150,8 +203,7 @@ export default function PlaylistSection({ artists }: Props) {
                 </button>
               ))}
             </div>
-
-            {/* notice for added song */}
+             notice for added song 
             {justAdded && (
               <p className="text-sm text-green-600 font-medium mt-4">
                 🎵 Added next song from <span className="font-semibold">{justAdded}</span>!
@@ -166,6 +218,7 @@ export default function PlaylistSection({ artists }: Props) {
                 Cancel
               </button>
             </div>
+            */}
           </Dialog.Panel>
         </div>
       </Dialog>
