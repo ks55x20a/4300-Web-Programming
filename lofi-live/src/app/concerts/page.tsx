@@ -1,6 +1,8 @@
 'use client';
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
+import PlaylistSection from "@/components/PlaylistSection";
 
 // concert type 
 type Concert = {
@@ -11,11 +13,15 @@ type Concert = {
   venue: {
     name: string;
   };
+  performers: {
+    name: string;
+    image: string;
+  }[];
 };
 
 // fetch concerts by city and state
 async function fetchConcerts(city: string, state: string): Promise<Concert[]> {
-  const clientId = "NDEzNzIwNjl8MTc0NDYyNzc1OS44ODk0ODU2";
+  const clientId = "NDEzNzIwNjl8MTc0NDYyNzc1OS44ODk0ODU2"; 
   const url = `https://api.seatgeek.com/2/events?venue.city=${city}&venue.state=${state}&type=concert&client_id=${clientId}`;
 
   const res = await fetch(url);
@@ -27,6 +33,7 @@ async function fetchConcerts(city: string, state: string): Promise<Concert[]> {
 
 export default function ConcertsPage() {
   const [concerts, setConcerts] = useState<Concert[]>([]);
+  const [artistNames, setArtistNames] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
 
   // form
@@ -39,6 +46,16 @@ export default function ConcertsPage() {
       .catch(console.error)
       .finally(() => setLoading(false));
   }, []);
+
+  // only use headliners
+  useEffect(() => {
+    const names = Array.from(
+      new Set(
+        concerts.map((concert) => concert.performers?.[0]?.name).filter(Boolean)
+      )
+    ).slice(0, 10);
+    setArtistNames(names);
+  }, [concerts]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -59,7 +76,7 @@ export default function ConcertsPage() {
         Upcoming Shows in {city}, {stateCode}
       </h1>
 
-      {/* Search bar */}
+      {/* search bar */}
       <form onSubmit={handleSubmit} className="mb-6 flex flex-wrap gap-2">
         <input
           type="text"
@@ -84,7 +101,7 @@ export default function ConcertsPage() {
         </button>
       </form>
 
-      {/* Concert results */}
+      {/* concert results */}
       {loading ? (
         <p className="text-gray-700">Loading...</p>
       ) : concerts.length === 0 ? (
@@ -96,10 +113,18 @@ export default function ConcertsPage() {
               key={concert.id}
               className="p-4 border rounded-xl shadow bg-white text-black space-y-2"
             >
+              {concert.performers?.[0]?.image && (
+                <Image
+                  src={concert.performers[0].image}
+                  alt={concert.title}
+                  width={400}
+                  height={250}
+                  className="rounded"
+                />
+              )}
               <h2 className="text-lg font-semibold">{concert.title}</h2>
               <p className="text-sm text-gray-700">
-                {concert.venue.name} —{" "}
-                {new Date(concert.datetime_local).toLocaleString()}
+                {concert.venue.name} — {new Date(concert.datetime_local).toLocaleString()}
               </p>
               <a
                 href={concert.url}
@@ -113,6 +138,11 @@ export default function ConcertsPage() {
           ))}
         </div>
       )}
+
+      {/* playlist section */}
+      <div className="mt-16">
+        <PlaylistSection artists={artistNames} />
+      </div>
     </div>
   );
 }
