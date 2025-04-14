@@ -3,6 +3,8 @@
 import { useEffect, useState } from 'react';
 import { Dialog } from '@headlessui/react';
 import { Plus } from 'lucide-react';
+import  Image  from 'next/image';
+import placeholder from './Placeholder-523345509.png'
 
 type Props = {
   artists: string[];
@@ -11,9 +13,9 @@ type Props = {
 const API_KEY = '0310e189ed11072b7f61d3791e51d4a5';
 
 export default function PlaylistSection({ artists }: Props) {
-  const isLoggedIn = true; // change later with real auth
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // change later with real auth
 
-  const [songs, setSongs] = useState<{ artist: string; title: string }[]>([]);
+  const [songs, setSongs] = useState<{ artist: string; title: string; }[]>([]);
   const [formData, setFormData] = useState({
     title:"",
     artist:'',
@@ -78,6 +80,10 @@ export default function PlaylistSection({ artists }: Props) {
     setIsModalOpen(false);
   }
 
+  const handleLoginPress = () => {
+    setIsLoggedIn(!isLoggedIn)
+  }
+
   const handleFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault;
     const { name, value } = e.target;
@@ -94,10 +100,11 @@ export default function PlaylistSection({ artists }: Props) {
 
       {!isLoggedIn && (
         <div className="mb-4 text-sm text-purple-700 bg-purple-100 px-4 py-2 rounded">
+          
           Sign in to customize your playlist!
         </div>
       )}
-
+      {isLoggedIn && (
       <ul className="space-y-3">
         {songs.map((song, idx) => (
           <li
@@ -107,6 +114,8 @@ export default function PlaylistSection({ artists }: Props) {
             <span className="text-md text-black">
               <span className="font-semibold text-black">{song.title}</span> by{' '}
               <span className="text-gray-700">{song.artist}</span>
+              <Image src={placeholder} alt='image can not load'/>
+              
             </span>
             {isLoggedIn && (
               <button
@@ -119,7 +128,7 @@ export default function PlaylistSection({ artists }: Props) {
           </li>
         ))}
       </ul>
-
+      )}
       {/* save playlist button */}
       <div className="mt-10 mb-20 text-right">
         <button
@@ -143,6 +152,13 @@ export default function PlaylistSection({ artists }: Props) {
           <Plus size={20} />
         </button>
       )}
+
+        <button
+          className="fixed top-6 right-6 bg-purple-600 text-white p-4 rounded-full shadow-lg hover:bg-purple-700 transition"
+          onClick={handleLoginPress}
+        >
+          <p>Log in/out</p>
+        </button>
 
       {/* modal */}
       <Dialog open={isModalOpen} onClose={() => setIsModalOpen(false)} className="relative z-50">
