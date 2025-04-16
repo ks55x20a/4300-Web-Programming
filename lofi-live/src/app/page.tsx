@@ -1,7 +1,11 @@
 import Image from "next/image";
 import Link from "next/link";
+import connectMongoDB from "../../config/mongodb";
 
 export default function Home() {
+  
+  connectMongoDB()
+
   return (
     <main className="flex items-center justify-center min-h-screen bg-gradient-to-br from-pink-200 via-purple-200 to-blue-200 px-4 sm:px-6">
       <div className="bg-white rounded-3xl shadow-2xl p-8 sm:p-12 w-full max-w-2xl flex flex-col items-center text-center space-y-6">
