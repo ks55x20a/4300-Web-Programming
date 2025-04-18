@@ -5,15 +5,22 @@ import { Dialog } from '@headlessui/react';
 import { Plus } from 'lucide-react';
 import  Image  from 'next/image';
 import placeholder from './Placeholder-523345509.png'
+import { Session } from 'next-auth';
+import { doLogout } from '@/app/actions';
 
 type Props = {
   artists: string[];
+  session: Session | null;
 };
 
 const API_KEY = '0310e189ed11072b7f61d3791e51d4a5';
 
-export default function PlaylistSection({ artists }: Props) {
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // change later with real auth
+
+export default function PlaylistSection({ artists, session}: Props) {
+  const [isLoggedIn, setIsLoggedIn] = useState(!!session?.user); 
+  useEffect(() => {
+    setIsLoggedIn(!!session?.user);
+  }, [session])
 
   const [songs, setSongs] = useState<{ artist: string; title: string; }[]>([]);
   const [formData, setFormData] = useState({
@@ -65,27 +72,28 @@ export default function PlaylistSection({ artists }: Props) {
   const getNextSongIndex = (artist: string) =>
     songs.filter((s) => s.artist === artist).length;
 
-  const handleAddSong = (artist: string) => {
-    const index = getNextSongIndex(artist);
-    const next = artistTracks[artist]?.[index];
-    if (!next || songs.length >= 50) return;
-    setSongs((prev) => [...prev, { artist, title: next }]);
-    setJustAdded(artist);
-    setTimeout(() => setJustAdded(null), 2000);
+  const handleAddSong = (e: React.FormEvent) => {
+    e.preventDefault();
+    const artist = formData.artist;
+    const title = formData.title;
+    const thumbnail = formData.thumbnail;
+    //const index = getNextSongIndex(artist);
+    //const next = artistTracks[artist]?.[index];
+    //if (!next || songs.length >= 50) return;
+    setSongs((prev) => [...prev, { artist, title, thumbnail }]);
+    //setJustAdded(artist);
+    //setTimeout(() => setJustAdded(null), 2000);
+    setIsModalOpen(false);
   };
 
   const handleAddSong2 = (e: React.FormEvent) => {
-    e.preventDefault;
+    e.preventDefault();
     console.log("Song added:", formData)
     setIsModalOpen(false);
   }
 
-  const handleLoginPress = () => {
-    setIsLoggedIn(!isLoggedIn)
-  }
-
   const handleFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    e.preventDefault;
+    e.preventDefault();
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
@@ -152,14 +160,6 @@ export default function PlaylistSection({ artists }: Props) {
           <Plus size={20} />
         </button>
       )}
-
-        <button
-          className="fixed top-6 right-6 bg-purple-600 text-white p-4 rounded-full shadow-lg hover:bg-purple-700 transition"
-          onClick={handleLoginPress}
-        >
-          <p>Log in/out</p>
-        </button>
-
       {/* modal */}
       <Dialog open={isModalOpen} onClose={() => setIsModalOpen(false)} className="relative z-50">
         <div className="fixed inset-0 bg-black/40" aria-hidden="true" />
@@ -168,7 +168,7 @@ export default function PlaylistSection({ artists }: Props) {
             <Dialog.Title className="text-lg font-bold text-black mb-4">
               Add Songs by Artist
             </Dialog.Title>
-            <form onSubmit={handleAddSong2}>
+            <form onSubmit={handleAddSong}>
               <input
                 type="text"
                 name="title"

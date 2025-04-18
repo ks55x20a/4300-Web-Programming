@@ -22,7 +22,7 @@ export default function SignupPage() {
     console.log("Signup Data:", formData);
     // will send to backend or create user
     try {
-      const response = await fetch('/api/items', {
+      const response = await fetch('/api/signup', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -36,7 +36,7 @@ export default function SignupPage() {
 
       setFormData({ name: '', username: '', email: '', password: '' });
     } catch (error) {
-      console.error('Error in CreateItem!', error);
+      console.error('Error in Signup!', error);
     }
   };
 

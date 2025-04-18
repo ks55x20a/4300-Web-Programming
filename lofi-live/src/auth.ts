@@ -30,10 +30,11 @@ export const {
                         );
 
                         if (isMatch) {
+                            console.log("logged in successfully");
                             return {
                                 id: user._id.toString(),
                                 email: user.email,
-                                name: user.username,
+                                name: user.name,
                             };
                         } else {
                             console.log("Email or Password is not correct");

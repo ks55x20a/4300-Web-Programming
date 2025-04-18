@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Navbar from "../components/Navbar";
+import { auth } from "../auth";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -18,17 +19,18 @@ export const metadata: Metadata = {
   description: "Discover shows & artists near you",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const session = await auth();
   return (
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gradient-to-br from-pink-200 via-purple-200 to-blue-200 text-black min-h-screen overflow-x-hidden`}
       >
-        <Navbar />
+        <Navbar session={session}/>
         <main>{children}</main>
       </body>
     </html>

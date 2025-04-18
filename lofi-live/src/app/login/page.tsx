@@ -3,8 +3,10 @@
 import Link from "next/link";
 import { FormEvent, useState } from "react";
 import { doCredentialLogin } from "../actions";
+import { useRouter } from "next/navigation"
 
 export default function LoginPage() {
+  const router = useRouter();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -17,8 +19,13 @@ export default function LoginPage() {
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>):  Promise<void> {
     e.preventDefault();
-    const response = await new FormData(e.currentTarget)
-    doCredentialLogin(response);
+    const formData = new FormData(e.currentTarget);
+    const response = await doCredentialLogin(formData);
+    if (response?.error) {
+      console.error(response.error);
+    } else {
+      router.push("/")
+    }
     console.log("Login Data:", formData);
     // will eventually send to backend or validate login
   };
