@@ -1,7 +1,8 @@
 'use client';
 
 import Link from "next/link";
-import { useState } from "react";
+import { FormEvent, useState } from "react";
+import { doCredentialLogin } from "../actions";
 
 export default function LoginPage() {
   const [formData, setFormData] = useState({
@@ -14,8 +15,10 @@ export default function LoginPage() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  async function handleSubmit(e: FormEvent<HTMLFormElement>):  Promise<void> {
     e.preventDefault();
+    const response = await new FormData(e.currentTarget)
+    doCredentialLogin(response);
     console.log("Login Data:", formData);
     // will eventually send to backend or validate login
   };

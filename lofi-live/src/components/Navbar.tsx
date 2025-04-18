@@ -1,9 +1,27 @@
+'use client'
+
 import Link from "next/link";
 import Image from "next/image";
+import { Session } from "next-auth";
+import { useEffect, useState } from "react";
+import { doLogout } from "@/app/actions";
 
-export default function Navbar() {
-  const isLoggedIn = true; // just for testing, will change later for actual auth
+interface NavbarProps {
+  session: Session | null;
+}
 
+export default function Navbar({ session }: NavbarProps) {
+  //const isLoggedIn = true; // just for testing, will change later for actual auth
+  const [isLoggedIn, setIsLoggedIn] = useState(!!session?.user);
+
+  useEffect(() => {
+    setIsLoggedIn(!!session?.user);
+  }, [session])
+
+  const handleLogout = () => {
+    doLogout();
+    setIsLoggedIn(false);
+  }
   return (
     <nav className="fixed left-0 top-0 h-full w-[80px] bg-white border-r shadow-md flex flex-col justify-between items-center py-6 z-50">
       {/* nav links */}
