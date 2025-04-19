@@ -19,15 +19,18 @@ export default function LoginPage() {
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>):  Promise<void> {
     e.preventDefault();
+    try {
     const formData = new FormData(e.currentTarget);
     const response = await doCredentialLogin(formData);
     if (response?.error) {
       console.error(response.error);
     } else {
-      router.push("/")
+      router.push("/concerts")
     }
     console.log("Login Data:", formData);
-    // will eventually send to backend or validate login
+  } catch (e: any) {
+    alert("Invalid credentials! Try again.")
+  }
   };
 
   return (

@@ -22,7 +22,7 @@ export default function PlaylistSection({ artists, session}: Props) {
     setIsLoggedIn(!!session?.user);
   }, [session])
 
-  const [songs, setSongs] = useState<{ artist: string; title: string; }[]>([]);
+  const [songs, setSongs] = useState<{ artist: string; title: string; thumbnail: string;}[]>([]);
   const [formData, setFormData] = useState({
     title:"",
     artist:'',
@@ -30,7 +30,9 @@ export default function PlaylistSection({ artists, session}: Props) {
   })
   const [artistTracks, setArtistTracks] = useState<Record<string, string[]>>({});
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModal2Open, setIsModal2Open] = useState(false);
   const [justAdded, setJustAdded] = useState<string | null>(null);
+  const [songEdit, setSongEdit] = useState({ artist: "", title: "", thumbnail: "",})
 
   // fetch top 5 songs
   const fetchTopSongs = async (artist: string): Promise<string[]> => {
@@ -52,13 +54,13 @@ export default function PlaylistSection({ artists, session}: Props) {
   useEffect(() => {
     async function loadSongs() {
       const trackMap: Record<string, string[]> = {};
-      const initialPlaylist: { artist: string; title: string }[] = [];
+      const initialPlaylist: { artist: string; title: string; thumbnail: string}[] = [];
 
       for (const artist of artists) {
         const topSongs = await fetchTopSongs(artist);
         if (topSongs.length > 0) {
           trackMap[artist] = topSongs;
-          initialPlaylist.push({ artist, title: topSongs[0] });
+          initialPlaylist.push({ artist, title: topSongs[0], thumbnail: "./Placeholder-523345509.png"});
         }
       }
 
@@ -98,9 +100,16 @@ export default function PlaylistSection({ artists, session}: Props) {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleDelete = (songToDelete: { artist: string; title: string }) => {
+  const handleDelete = (songToDelete: { artist: string; title: string;}) => {
     setSongs((prev) => prev.filter((s) => s !== songToDelete));
   };
+
+  const handleEdit = (e: React.FormEvent) => {
+    e.preventDefault();
+    handleDelete(songEdit);
+    handleAddSong(e);
+    setIsModal2Open(false);
+  }
 
   return (
     <div className="relative mt-16">
@@ -133,6 +142,16 @@ export default function PlaylistSection({ artists, session}: Props) {
                 &ndash;
               </button>
             )}
+            {isLoggedIn && (
+              <button
+                onClick={() => {
+                  setSongEdit(song)
+                  setIsModal2Open(true)}}
+                className="text-blue-500 text-lg font-bold"
+              >
+                &ndash;
+              </button>
+            )}
           </li>
         ))}
       </ul>
@@ -160,7 +179,7 @@ export default function PlaylistSection({ artists, session}: Props) {
           <Plus size={20} />
         </button>
       )}
-      {/* modal */}
+      {/* modal for adding song*/}
       <Dialog open={isModalOpen} onClose={() => setIsModalOpen(false)} className="relative z-50">
         <div className="fixed inset-0 bg-black/40" aria-hidden="true" />
         <div className="fixed inset-0 flex items-center justify-center p-4">
@@ -169,6 +188,55 @@ export default function PlaylistSection({ artists, session}: Props) {
               Add Songs by Artist
             </Dialog.Title>
             <form onSubmit={handleAddSong}>
+              <input
+                type="text"
+                name="title"
+                placeholder="Song title"
+                defaultValue={songEdit.title}
+                value={formData.title}
+                onChange={handleFormChange}
+                className="w-full p-3 rounded border border-gray-300 shadow-sm"
+                required
+              />
+              <input
+                type="text"
+                name="artist"
+                placeholder="Artist"
+                defaultValue={songEdit.artist}
+                value={formData.artist}
+                onChange={handleFormChange}
+                className="w-full p-3 rounded border border-gray-300 shadow-sm"
+                required
+              />
+              <input
+                type="text"
+                name="thumbnail"
+                placeholder="Thumbnail"
+                defaultValue={songEdit.thumbnail}
+                value={formData.thumbnail}
+                onChange={handleFormChange}
+                className="w-full p-3 rounded border border-gray-300 shadow-sm"
+                required
+              />
+              <button
+                type="submit"
+                className="w-full bg-black text-white py-2 px-4 rounded hover:bg-gray-800 transition"
+              >
+                Add song
+              </button>
+            </form>
+          </Dialog.Panel>
+        </div>
+      </Dialog>
+      {/* modal for editing song*/}
+      <Dialog open={isModal2Open} onClose={() => setIsModal2Open(false)} className="relative z-50">
+        <div className="fixed inset-0 bg-black/40" aria-hidden="true" />
+        <div className="fixed inset-0 flex items-center justify-center p-4">
+          <Dialog.Panel className="mx-auto max-w-md w-full rounded-xl bg-white p-6">
+            <Dialog.Title className="text-lg font-bold text-black mb-4">
+              Add Songs by Artist
+            </Dialog.Title>
+            <form onSubmit={handleEdit}>
               <input
                 type="text"
                 name="title"
@@ -203,38 +271,6 @@ export default function PlaylistSection({ artists, session}: Props) {
                 Add song
               </button>
             </form>
-            {/*
-            <div className="space-y-2">
-              {artists.map((artist) => (
-                <button
-                  key={artist}
-                  disabled={
-                    getNextSongIndex(artist) >= artistTracks[artist]?.length ||
-                    songs.length >= 50
-                  }
-                  onClick={() => handleAddSong(artist)}
-                  className="w-full text-left p-3 rounded bg-gray-100 text-gray-800 hover:bg-purple-100 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  Add next top song from <span className="font-semibold">{artist}</span>
-                </button>
-              ))}
-            </div>
-             notice for added song 
-            {justAdded && (
-              <p className="text-sm text-green-600 font-medium mt-4">
-                🎵 Added next song from <span className="font-semibold">{justAdded}</span>!
-              </p>
-            )}
-
-            <div className="mt-4 text-right">
-              <button
-                onClick={() => setIsModalOpen(false)}
-                className="text-gray-600 hover:text-black"
-              >
-                Cancel
-              </button>
-            </div>
-            */}
           </Dialog.Panel>
         </div>
       </Dialog>
