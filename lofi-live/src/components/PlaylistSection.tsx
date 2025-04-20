@@ -60,8 +60,8 @@ export default function PlaylistSection({ artists, session}: Props) {
         const topSongs = await fetchTopSongs(artist);
         if (topSongs.length > 0) {
           trackMap[artist] = topSongs;
-          initialPlaylist.push({ artist, title: topSongs[0], thumbnail: "./Placeholder-523345509.png"});
-        }
+          initialPlaylist.push({ artist, title: topSongs[0], thumbnail: 'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwww.moshpyt.com%2F_next%2Fimage%3Furl%3D%252F_next%252Fstatic%252Fmedia%252Fsongplaceholder.a1e014c8.png%26w%3D1080%26q%3D75&f=1&nofb=1&ipt=137d42012fa98fbe1b3dfb1a6f0cdd9172d344f038299228b0d6600d003e1d65'});
+        } 
       }
 
       setArtistTracks(trackMap);
@@ -100,6 +100,25 @@ export default function PlaylistSection({ artists, session}: Props) {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const addPlayList = async () => {
+    try {
+      const formattedPlaylist = {songs: songs, user: session?.user?.email}
+      const response = await fetch('/api/playlist', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formattedPlaylist),
+      });
+
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+    } catch (error) {
+      console.error('Error in adding playlist!', error);
+    }
+  }
+
   const handleDelete = (songToDelete: { artist: string; title: string;}) => {
     setSongs((prev) => prev.filter((s) => s !== songToDelete));
   };
@@ -131,7 +150,7 @@ export default function PlaylistSection({ artists, session}: Props) {
             <span className="text-md text-black">
               <span className="font-semibold text-black">{song.title}</span> by{' '}
               <span className="text-gray-700">{song.artist}</span>
-              <Image src={placeholder} alt='image can not load'/>
+              <Image src={song.thumbnail} width={100} height={100} alt='image can not load'/>
               
             </span>
             {isLoggedIn && (
@@ -159,6 +178,7 @@ export default function PlaylistSection({ artists, session}: Props) {
       {/* save playlist button */}
       <div className="mt-10 mb-20 text-right">
         <button
+          onClick={addPlayList}
           disabled={!isLoggedIn}
           className={`px-6 py-2 rounded ${
             isLoggedIn

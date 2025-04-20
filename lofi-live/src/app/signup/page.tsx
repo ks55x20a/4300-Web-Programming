@@ -7,7 +7,6 @@ import { useState } from "react";
 export default function SignupPage() {
   const [formData, setFormData] = useState({
     name: "",
-    username: "",
     email: "",
     password: "",
   });
@@ -34,7 +33,7 @@ export default function SignupPage() {
         throw new Error('Network response was not ok');
       }
 
-      setFormData({ name: '', username: '', email: '', password: '' });
+      setFormData({ name: '', email: '', password: '' });
     } catch (error) {
       console.error('Error in Signup!', error);
     }
@@ -50,15 +49,6 @@ export default function SignupPage() {
           name="name"
           placeholder="Full Name"
           value={formData.name}
-          onChange={handleChange}
-          className="w-full p-3 rounded border border-gray-300 shadow-sm"
-        />
-
-        <input
-          type="text"
-          name="username"
-          placeholder="Username"
-          value={formData.username}
           onChange={handleChange}
           className="w-full p-3 rounded border border-gray-300 shadow-sm"
         />
