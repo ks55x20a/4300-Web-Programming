@@ -2,6 +2,7 @@
 
 import { getSession } from "next-auth/react";
 import { useEffect, useState } from "react";
+import Image from "next/image"
 
 interface Song {
   title: string;
@@ -13,6 +14,7 @@ interface Playlist {
   songs: Song[];
   user: String;
 }
+
 
 const session = await getSession();
 // will update this once database is set up
@@ -37,6 +39,7 @@ export default function SavedPlaylistsPage() {
     }
   }, [session])
   
+  
   const deletePlaylist = async (playlist: Playlist) => {
 
   }
@@ -44,6 +47,7 @@ export default function SavedPlaylistsPage() {
 
   const placeholder = 'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwww.wagbet.com%2Fwp-content%2Fuploads%2F2019%2F11%2Fmusic_placeholder.png&f=1&nofb=1&ipt=ebe0015c3e32cf5949aebea723622c39c27178198addd82dae9f4b9cbc7a63ba'
 
+  
   return (
     <div className="min-h-screen pl-[100px] py-10 px-6 bg-gradient-to-br from-pink-200 via-purple-200 to-blue-200 text-black">
       <h1 className="text-3xl font-bold mb-6">Saved Playlists</h1>
@@ -59,7 +63,11 @@ export default function SavedPlaylistsPage() {
                   <span className="text-md text-black">
                     <span className="font-semibold text-black">{song.title}</span> by{' '}
                     <span className="text-gray-700">{song.artist}</span>
-                    <img src={song.thumbnail || placeholder} alt='image can not load' width={100} height={100} onError={(e) => {const target = e.target as HTMLImageElement; target.src = placeholder}}/>
+                    <Image src={
+                      song.thumbnail && (song.thumbnail.startsWith('http://') || song.thumbnail.startsWith('https://'))
+                      ? song.thumbnail
+                      : placeholder
+                    } width={100} height={100} alt='image can not load' onError={(e) => {const target = e.target as HTMLImageElement; target.src = placeholder}}/>
                     <a href={`https://open.spotify.com/search/artist%3A${song.artist.replace(/\s+/g,'%20')}%20track%3A${song.title.replace(/\s+/g,'%20')}`} target="_blank">Spotify Link</a>
                   </span>
                 </li>
