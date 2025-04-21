@@ -1,9 +1,7 @@
 'use client';
 
-import { getSession, useSession } from "next-auth/react";
+import { getSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-import  Image  from 'next/image';
-import placeholder from '@/components/Placeholder-523345509.png'
 
 interface Song {
   title: string;
@@ -28,6 +26,7 @@ export default function SavedPlaylistsPage() {
           const response = await fetch(`/api/playlist/${session?.user?.email}`);
           const data = await response.json();
           setPlaylists(data.playlists)
+          
           console.log("Playlists: ", data)
         } catch (error){
           console.log("Error in showing playlists", error);
@@ -61,6 +60,7 @@ export default function SavedPlaylistsPage() {
                     <span className="font-semibold text-black">{song.title}</span> by{' '}
                     <span className="text-gray-700">{song.artist}</span>
                     <img src={song.thumbnail || placeholder} alt='image can not load' width={100} height={100} onError={(e) => {const target = e.target as HTMLImageElement; target.src = placeholder}}/>
+                    <a href={`https://open.spotify.com/search/artist%3A${song.artist.replace(/\s+/g,'%20')}%20track%3A${song.title.replace(/\s+/g,'%20')}`} target="_blank">Spotify Link</a>
                   </span>
                 </li>
               ))}
