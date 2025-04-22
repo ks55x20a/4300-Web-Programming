@@ -1,7 +1,6 @@
 'use server'
 
 import { signIn, signOut} from "../../auth";
-import { POST } from "../api/items/route";
 
 export async function doLogout() {
     await signOut({redirectTo: "/login"})
