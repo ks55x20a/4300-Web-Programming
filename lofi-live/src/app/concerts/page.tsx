@@ -3,8 +3,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import PlaylistSection from "@/components/PlaylistSection";
-import { auth } from "@/auth";
-import { getSession, useSession } from "next-auth/react";
+import { getSession } from "next-auth/react";
 
 // concert type 
 type Concert = {
@@ -33,10 +32,9 @@ async function fetchConcerts(city: string, state: string): Promise<Concert[]> {
   return data.events;
 }
 
-const session = await getSession() // This is currently supported by webpack, but may have unintended side effects.
 export default function ConcertsPage() {
-  const [isLoggedIn, setIsLoggedIn] = useState(!!session?.user); 
-  //const {data: session, status } = useSession();
+  const [session, setSession] = useState<any>(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [concerts, setConcerts] = useState<Concert[]>([]);
   const [artistNames, setArtistNames] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
@@ -45,9 +43,13 @@ export default function ConcertsPage() {
   const [city, setCity] = useState("Atlanta");
   const [stateCode, setStateCode] = useState("GA");
 
+  // get session on mount
   useEffect(() => {
-    setIsLoggedIn(!!session?.user);
-  }, [session])
+    getSession().then((data) => {
+      setSession(data);
+      setIsLoggedIn(!!data?.user);
+    });
+  }, []);
 
   useEffect(() => {
     fetchConcerts(city, stateCode)
@@ -78,7 +80,7 @@ export default function ConcertsPage() {
       setLoading(false);
     }
   };
-  //const session = await auth();
+
   return (
     <div className="min-h-screen p-6 pl-[100px] bg-gradient-to-br from-pink-200 via-purple-200 to-blue-200">
       <h1 className="text-2xl font-bold mb-4 text-black">
