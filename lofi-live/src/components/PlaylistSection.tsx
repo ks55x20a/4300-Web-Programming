@@ -134,8 +134,14 @@ export default function PlaylistSection({ artists, session }: Props) {
 
       {!isLoggedIn && (
         <div className="mb-4 text-sm text-purple-700 bg-purple-100 px-4 py-2 rounded">
-          Sign in to customize your playlist!
-        </div>
+        <a
+          href="/login"
+          className="underline text-purple-800 hover:text-purple-900 transition"
+        >
+          Login
+        </a>{" "}
+        to customize your playlist!
+      </div>      
       )}
       {isLoggedIn && (
         <ul className="space-y-3">
