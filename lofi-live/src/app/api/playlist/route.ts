@@ -26,7 +26,3 @@ export const POST = async (request: any) => {
   });
 
 }
-
-export const DELETE = async (request: any) => {
-  
-}

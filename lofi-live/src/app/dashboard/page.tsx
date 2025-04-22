@@ -41,10 +41,6 @@ export default function SavedPlaylistsPage() {
     }
   }, [session]);
 
-  const deletePlaylist = async (playlist: Playlist) => {
-    console.log("Delete requested for:", playlist);
-  };
-
   return (
     <div className="min-h-screen pl-[100px] py-10 px-6 bg-gradient-to-br from-pink-200 via-purple-200 to-blue-200 text-black">
       <h1 className="text-3xl font-bold mb-6">Saved Playlists</h1>
@@ -95,12 +91,6 @@ export default function SavedPlaylistsPage() {
             ))}
           </ul>
 
-          <button
-            onClick={() => deletePlaylist(playlist)}
-            className="mt-6 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition"
-          >
-            Delete this playlist
-          </button>
         </div>
       ))}
     </div>
