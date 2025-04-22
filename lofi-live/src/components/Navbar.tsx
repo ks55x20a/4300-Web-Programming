@@ -11,7 +11,6 @@ interface NavbarProps {
 }
 
 export default function Navbar({ session }: NavbarProps) {
-  // const isLoggedIn = true; // just for testing, will change later for actual auth
   const [isLoggedIn, setIsLoggedIn] = useState(!!session?.user);
 
   useEffect(() => {
@@ -25,11 +24,21 @@ export default function Navbar({ session }: NavbarProps) {
 
   return (
     <nav className="fixed top-0 left-0 w-full bg-white border-b shadow z-50">
-      <div className="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
-        {/* logo */}
-        <Link href="/" className="flex items-center gap-2">
-          <Image src="/logo.png" alt="LoFiLive logo" width={40} height={40} />
-        </Link>
+      <div className="max-w-6xl mx-auto px-4 py-3 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
+        {/* top left logo + welcome */}
+        <div className="flex items-center gap-4">
+          {/* logo */}
+          <Link href="/" className="flex items-center gap-2">
+            <Image src="/logo.png" alt="LoFiLive logo" width={40} height={40} />
+          </Link>
+
+          {/* welcome message if logged in */}
+          {isLoggedIn && (
+            <p className="text-sm text-gray-600 font-medium">
+              Welcome, <span className="font-semibold">{session?.user?.name}</span>
+            </p>
+          )}
+        </div>
 
         {/* nav links */}
         <div className="flex items-center space-x-10">
