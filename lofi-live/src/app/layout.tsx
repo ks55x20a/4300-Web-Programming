@@ -31,7 +31,7 @@ export default async function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gradient-to-br from-pink-200 via-purple-200 to-blue-200 text-black min-h-screen overflow-x-hidden`}
       >
         <Navbar session={session}/>
-        <main className="pt-20">{children}</main>
+        <main className="pt-19">{children}</main>
       </body>
     </html>
   );
